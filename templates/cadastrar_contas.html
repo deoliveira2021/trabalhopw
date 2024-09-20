@@ -1,0 +1,69 @@
+{% extends 'consultar_contas.html'%}
+
+{% block credores%}
+<form class="pure-form pure-form-aligned" method="post" action="/contas/cadastrar">
+  <table class="table full" align="center">
+    <tr bgcolor="#6699CC">
+      <td colspan="40">
+      <div align="center"><font face="Arial" size="4" color="#FFFFFF"><b>Cadastrar Contas</b></font></div>
+    </td>
+    </tr>
+    <tr bgcolor="ebebeb">
+      <td colspan="40" with = 100%>
+        <div class="control-group">
+					CREDOR
+          <select class="controls" name="cnpj" required width="3" id="cnpj">
+            <option value="" with = 100%>Selecione um credor...</option>
+            {%for credor in context.credores %}
+              <option value={{credor.cnpj}}>{{credor.nome}}</option>
+            {%endfor%}
+          </select>
+          <!-- <script>
+            document.getElementById("cnpj").addEventListener("change", printMsg);           
+            function printMsg() {  
+              var element = document.getElementById("cnpj");
+              var valorSel = element.options[element.selectedIndex].text;
+              document.getElementById("name").value = valorSel
+            }
+          </script>           -->
+        </div>
+      </td>
+		</tr>
+    <tr>
+      <td colspan="40">
+      	<div align="center"><font face="Arial" size="4" color="#000000"><b>Dados da Conta</b></font></div>
+    	</td>
+    </tr>		
+    <tr bgcolor="ebebeb">
+      <td colspan="20" width="70%">
+        <div class="control-group">
+          <!-- Credor <input type="text" id="name" readonly  disabled> -->
+          Descrição <input type="text" name="descricao" required>
+        </div>
+      </td>      
+      <td colspan="10" width ="15%">
+        <div class="control-group">
+          Valor  <input type="currency" name="valor" required format="currency" precision="2" id="contaValor" style="text-align:right">
+        </div>
+      </td>      
+      <td colspan="10" width ="15%">
+        <div class="control-group">
+          Vencimento <input type="date" name="vencimento" format="dd/mm/yyyy" placeholder="DD/MM/YYYY" required>
+        </div>
+      </td>			
+		</tr>
+  </table>
+
+  <table class="table full" align="center">
+   <tr bgcolor="ebebeb">
+     <td>
+       <div class="controls" align = "center">
+           <button type="submit" class="pure-button pure-button-primary">Salvar</button>
+           <button type="reset" class="pure-button" >Limpar dados</button>
+       </div>
+     </td>
+   </tr>
+  </table>
+</form>
+
+{% endblock %}

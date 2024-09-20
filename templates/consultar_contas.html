@@ -1,0 +1,167 @@
+{% extends 'base.html'%}
+
+{% block conteudo %}
+
+{% block credores %}{% endblock %}
+  <table class="table full" align="center" id="tabContaConsultar">
+    <thead>
+      <th colspan="15" bgcolor="#6699CC">
+        <div align="center"><font face="Arial" size="4"><b><font color="#FFFFFF">Contas cadastradas</font></b></font></div>
+      </th>
+      <tr bgcolor="cccccc">
+        <th>CREDOR</th>
+        <th>Descrição</th>
+        <th>Vencimento</th>
+        <th>Valor</th>
+        <th>Data Pto</th>
+        <th>Multa</th>
+        <th>Juros</th>
+        <th>Valor Pago</th>
+        <th>Quitado?</th>
+        <th colspan="6">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for conta in context.contas %}
+          <tr bgcolor="ebebeb">
+            <td align = left >{{ conta.credor.nome }}</td>
+            <td align = left >{{ conta.descricao }}</td>
+            <td id="venc" align = center >{{ conta.vencimento }}</td>      
+            <td id="contaVal" align = right >{{ conta.valor }}</td>
+            {%if conta.pagamento !=[]%}
+              {% for pag in conta.pagamento %}
+                  <td id="dtpag" align = center >{{ pag.data_pagamento }}</td>      
+                  <td id="multa" align = right >{{ pag.multa }}</td>      
+                  <td id="juros" align = right >{{ pag.juros }}</td>      
+                  <td id="pagVal" align = right >{{ pag.valor }}</td>
+                  {%if pag.valor < conta.valor %}
+                    <td id="quitado" align="center"> Não </td>
+                  {%else%}
+                    <td id="quitado" align="center"> Sim </td>
+                  {%endif%}                  
+              {%endfor%}
+            {%else%}
+              <td id="dtpag" align = center >None</td>      
+              <td id="multa" align = right >0.00</td>      
+              <td id="juros" align = right >0.00</td>      
+              <td id="pagVal" align = right >0.00</td>            
+              <td id="quitado" align="center"> Não </td>
+            {%endif%}
+            <td align = center >
+              <a href="/contas/editar/{{conta.id}}"> Editar
+                <i class="fa fa-edit"></i>
+              </a>
+            </td>
+            <td align = center >
+              {%if conta.pagamento !=[]%}
+                {% for pag in conta.pagamento %}
+                  {%if pag.valor < conta.valor %}
+                    <a href="/pagamentos/cadastrar/{{conta.id}}"> Pagar
+                      <i class="fa fa-edit"></i>
+                    </a> 
+                  {%else%}
+                    <a href=""> Pagar
+                      <i class="fa fa-edit"></i>
+                    </a>                   
+                  {%endif%}
+                {%endfor%}
+             {%else%}             
+                <a href="/pagamentos/cadastrar/{{conta.id}}"> Pagar
+                  <i class="fa fa-edit"></i>
+                </a>
+              {%endif%}
+            </td>            
+            <td align = center>
+              <a href="/contas/delete/{{conta.id}}" > 
+              <font color = "RED"> Excluir
+                <i class="fa fa-trash"></i>
+              </font>
+              </a>
+            </td>
+          </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <script>
+    function handleClick(cb) {
+      display("Clicked, new value = " + cb.checked);
+    }
+
+    const fmt = new Intl.NumberFormat(
+    'pt-BR',                         //Configura localização como português do Brasil.
+    {
+      style: 'currency',             //Configura o estilo de formatação como moeda.
+      currency: 'BRL'                //Configura a moeda como Real Brasileiro.
+    }
+    );
+
+    const dataFormatada = new Intl.DateTimeFormat(
+    'pt-BR', {                                     //Configura localização como português do Brasil.
+      dateStyle: 'short',                          //Configura o estilo de formatação como data curta.
+    });    
+
+    $(document).ready(function() {
+      //Aplica a formatação.
+      $('#tabContaConsultar tbody tr').each(function() {
+        contaValor = Number($("td:eq(3)", this).text());
+      
+        if ($("td:eq(7)", this).text()=="NaN"){
+          pagamentoValor = 0.00;
+        }          
+        if ($("td:eq(7)", this).text()!="NaN"){
+          pagamentoValor = Number($("td:eq(7)", this).text());
+        }           
+        multa = Number($("td:eq(5)", this).text()); 
+        juros = Number($("td:eq(6)", this).text()); 
+
+        $('td#contaVal', this).text( fmt.format(contaValor) );
+        $('td#pagVal', this).text( fmt.format(pagamentoValor) );
+        $('td#multa', this).text( fmt.format(multa) );
+        $('td#juros', this).text( fmt.format(juros) );
+
+        // Aqui devemos passar a hora 00:00:00 para que a função Date() não decremente o dia, tendo em vista que,
+        // por padrão retorna a data no UTC na hora 00:00:00, como no pt-BR é UTC-3, 
+        // a função Date() faz a subtração de três horas do horário UTC, resultando, pois,
+        // em 21h do dia anterior como resultado da data, sem passar o horário.
+        // Outra forma de obter o mesmo resultado, sem passar a hora 00:00:00,
+        // é ajustando o timeZone para UTC, daí, não vai haver a subtração de três horas na data.
+        datavenc = new Date($("td:eq(2)", this).text()+" 00:00:00"); // Informando a hora 00:00:00     
+        dataAtual =  new Date();
+        dia = dataAtual.getDate();
+        mes = dataAtual.getMonth();
+        ano = dataAtual.getFullYear();
+
+        dataAtual = new Date(ano,mes,dia, 0,0,0,0);
+ 
+        if((datavenc< dataAtual) & (pagamentoValor < contaValor)){
+          $('td#pagVal', this).css("backgroundColor", "red");
+        }
+        else{
+          $('td#pagVal', this).css("backgroundColor", "#ebebeb");
+        }
+        $('td#venc', this).text( dataFormatada.format(datavenc));
+
+        //Como a data do pagamento é preenchida só quando se efetiva o pagamento,
+        //devemos fazer uma verificação se existe a data no campo equivalente,
+        //caso contrário, por encontrar um erro, não será feita a conversão
+        // a partir da linha que deu erro!
+        if ($("td:eq(4)", this).text()=="None"){
+          $('td#dtpag', this).text("");
+        }
+        else {
+          datapagt = new Date($("td:eq(4)", this).text()+" 00:00:00");
+          $('td#dtpag', this).text( dataFormatada.format(datapagt));          
+        }
+
+      })
+
+      $('#tabContaEditar ').each(function() {
+        contaValor = Number($("input:eq(1)", this).text()); 
+
+        $('td#contaVal', this).text( fmt.format(contaValor) );
+      })  
+      
+    });   
+  </script>  
+
+{% endblock %}

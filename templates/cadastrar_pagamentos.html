@@ -1,0 +1,140 @@
+{% extends 'consultar_contas.html'%}
+
+{% block credores%}
+<form class="pure-form pure-form-aligned" method="post" action="/pagamentos/cadastrar/{{context.conta.id}}">
+  <table class="table full" align="center">
+    <tr bgcolor="#6699CC">
+      <td colspan="40">
+      	<div align="center"><font face="Arial" size="4" color="#FFFFFF"><b>Dados da Conta</b></font></div>
+      </td>
+    </tr>
+    <tr bgcolor="ebebeb">
+      <td colspan="40">
+        <div class="control-group">
+					CNPJ <input type="text" name="cnpj" value="{{context.conta.credor_cnpj}}" readonly style="text-align:right">
+          - <input type="text" name="nome" value="{{context.conta.credor.nome}}" readonly>
+          Descrição  <input type="text" name="cep" value="{{context.conta.descricao}}" readonly>
+          Vencimento <input type="date" name="vencimento" value="{{context.conta.vencimento}}" readonly>
+          Valor <input type="currency" id="valor" style="text-align:right" value="{{context.conta.valor}}" readonly disabled>
+        </div>
+      </td>
+		</tr>
+  </table>
+  <table class="table full" align="center" id="tabPagar">
+    <tr bgcolor="#6699CC">
+      <td colspan="40">
+      <div align="center"><font face="Arial" size="4" color="#FFFFFF"><b>Pagamento de Conta</b></font></div>
+    </td>
+    </tr>
+    <tr bgcolor="ebebeb">
+      <td colspan="20" width="70%">
+        <div class="control-group">
+          <!-- Credor <input type="text" id="name" readonly  disabled> -->
+          Data Pagamento <input type="date" name="datapagamento" id="datapagto" required value=TODAY>
+          {%if context.conta.pagamento !=[]%}
+            
+            Juros <input name="juros" type="currency" value="{{context.conta.pagamento[0].juros}}" style="text-align:right">
+            Multa <input name="multa" type="currency" value="{{context.conta.pagamento[0].multa}}" style="text-align:right"> 
+            Total(Valor + Juros + Multa)  <input type="currency" value="{{context.conta.valor+context.conta.pagamento[0].juros+context.conta.pagamento[0].multa}}" name="total" id="valTotal" style="text-align:right">
+          {%else%}
+            Juros <input name="juros" type="currency" value="" style="text-align:right">
+            Multa <input name="multa" type="currency" value="" style="text-align:right"> 
+            Total(Valor + Juros + Multa)  <input type="currency" value="" name="total" id="valTotal" style="text-align:right">
+        {%endif%}
+
+        </div>
+      </td>      	
+		</tr>
+  </table>
+
+  <table class="table full" align="center">
+   <tr bgcolor="ebebeb">
+     <td>
+       <div class="controls" align = "center">
+           <button type="submit" class="pure-button pure-button-primary">Salvar</button>
+           <a href="/contas/cadastrar"><input type="button" value="Voltar"></a>
+       </div>
+     </td>
+   </tr>
+  </table>
+  <script>
+    var currencyInput = document.querySelectorAll( 'input[type="currency"]' );
+    const formataValor = new Intl.NumberFormat('pt-BR', {style: 'currency', currency:'BRL'});
+
+    for ( var i = 0; i < currencyInput.length; i++ ) {
+
+        var currency = 'BRL'
+        onBlur( {
+            target: currencyInput[ i ]
+        } )
+
+        currencyInput[ i ].addEventListener( 'focus', onFocus )
+        currencyInput[ i ].addEventListener( 'blur', onBlur )
+
+        function localStringToNumber( s ) {
+            return Number( String( s ).replace( /[^0-9.-]+/g, "" ) )
+        }
+
+        function onFocus( e ) {
+          const valorBruto = e.target.value.replace(/\D/g, '');
+          const valorFinal = (parseFloat(valorBruto/100));
+
+          var value = valorFinal
+          e.target.value = value ? localStringToNumber( value ) : ''
+
+          // var soma = somar( currencyInput  )
+          // e.target.getElementById( 'valTotal' ).value = soma ? localStringToNumber( soma ).toLocaleString( undefined, options ) : 
+          // 'R$ 0,00'
+
+        }
+
+        function onBlur( e ) {
+          // const valorBruto = e.target.value.replace("R$", '');
+          const valorBruto = e.target.value;
+          //usa o parseFloat para converter a string em float ignorando as partes não numéricas, como
+          //o símbolo de moeda e outros caracteres não numéricos
+          //Obs: se um "número" terminar com caracteres não numéricos, o parseFloat
+          //mata o restante sequência, a partir do primeiro caracter não numérico,
+          //exemplo, se o número for 12abc3, o resultado vai ser 12 e não 123.
+          const valorFinal = (parseFloat(valorBruto));
+          var value = valorFinal
+
+          var options = {
+              maximumFractionDigits: 2,
+              currency: currency,
+              style: "currency",
+              currencyDisplay: "symbol"
+          }
+          // se value for válido ou igual a zero, atribui a e.target.value um número em fortato monetário, senão, limpa o campo
+          e.target.value = ( value || value === 0 ) ?
+              localStringToNumber( value ).toLocaleString( undefined, options ) :
+              'R$ 0,00'
+
+          // var soma = somar( currencyInput )
+          // e.target.getElementById('valTotal').value = soma ? localStringToNumber(soma).toLocaleString( undefined, options ) : 
+          // 'R$ 0,00'                
+
+        }
+
+        function somar( elemento ){
+          var valor = elemento.getElementById('valor').value;
+          valor = valor.replace(/\D/g, '');
+          valor = parseFloat(valor/100);     
+
+          var juros = elemento.getElementById('juros').value;
+          juros = juros.replace(/\D/g, '');
+          juros = parseFloat(juros/100);
+
+          var multa = elemento.getElementById('multa').value;
+          multa = multa.replace(/\D/g, '');
+          multa = parseFloat(multa/100);
+
+          var soma = valor + juros + multa
+          return soma
+        }
+
+    }     
+  </script>
+</form>
+
+{% endblock %}

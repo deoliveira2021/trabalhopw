@@ -1,0 +1,61 @@
+{% extends 'base.html'%}
+
+{% block conteudo %}
+
+{% block credores %}{% endblock %}
+  <table class="table full" align="center" id="minhaTabela">
+    <thead>
+      <th colspan="13" bgcolor="#6699CC">
+        <div align="center"><font face="Arial" size="4"><b><font color="#FFFFFF">Credores cadastrados</font></b></font></div>
+      </th>
+      <tr bgcolor="cccccc">
+        <th>CNPJ</th>
+        <th>Nome</th>
+        <th>CEP</th>
+        <th>Logradouro</th>
+        <th>Número</th>
+        <th>Cidade</th>
+        <th>UF</th>
+        <th>Nome Contato</th>
+        <th>E-mail Contato</th>
+        <th>Telefone Contato</th>
+        <th>WhatsApp</th>
+        <th colspan="4">Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for credor in contexto.credores %}
+        <tr bgcolor="ebebeb">
+          <td align = center >{{ credor.cnpj }}</td>
+          <td align = left >{{ credor.nome }}</td>
+          <td align = center >{{ credor.endereco.cep }}</td>
+          <td align = left >{{ credor.endereco.logradouro }}</td>
+          <td align = center >{{ credor.endereco.numero }}</td>
+          <td align = left >{{ credor.endereco.cidade }}</td>
+          <td align = center >{{ credor.endereco.uf }}</td>
+          <td align = left >{{ credor.contato.nome }}</td>
+          <td align = left >{{ credor.contato.email }}</td>
+          <td align = center >{{ credor.contato.telefone }}</td>
+          <td align = center >{{ credor.contato.whatsapp }}</td>
+          <td align = center >
+            <a href="/credores/editar/{{credor.cnpj}}">
+              <i class="fa fa-edit"></i>
+            </a>
+          </td>
+          <td align = center>
+            <a href="/credores/delete/{{credor.cnpj}}" >
+            <font color = "RED">
+              <i class="fa fa-trash"></i>
+            </font>
+            </a>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <script>
+    function handleClick(cb) {
+      display("Clicked, new value = " + cb.checked);
+    }
+  </script>  
+{% endblock %}

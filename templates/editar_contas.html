@@ -1,0 +1,172 @@
+{% extends 'consultar_contas.html'%}
+
+{% block credores%}
+<form class="pure-form pure-form-aligned" method="post" action="/contas/editar/{{context.conta.id}}">
+  <table class="table full" align="center" id="tabContaEditar">
+    <tr bgcolor="#2F4F4F">
+      <td colspan="40">
+      <div align="center"><font face="Arial" size="4" color="#FFFFFF"><b>Cadastrar Contas</b></font></div>
+    </td>
+    </tr>
+    <tr bgcolor="ebebeb">
+      <td colspan="40" with = 100%>
+        <div class="control-group">
+					CREDOR
+          <select class="controls" name="cnpj" required width="3" id="cnpj">
+            <option value="{{context.conta.credor_cnpj}}" with = 100%>{{context.conta.credor.nome}}</option>
+            {%for credor in context.credores %}
+              <option value={{credor.cnpj}}>{{credor.nome}}</option>
+            {%endfor%}
+          </select>
+          <!-- <script>
+            document.getElementById("cnpj").addEventListener("change", printMsg);           
+            function printMsg() {  
+              var element = document.getElementById("cnpj");
+              var valorSel = element.options[element.selectedIndex].text;
+              document.getElementById("name").value = valorSel
+            }
+          </script>           -->
+        </div>
+      </td>
+		</tr>
+    <tr>
+      <td colspan="40">
+      	<div align="center"><font face="Arial" size="4" color="#000000"><b>Dados da Conta</b></font></div>
+    	</td>
+    </tr>		
+    <tr bgcolor="ebebeb">
+      <td colspan="20" width="70%" >
+        <div class="control-group">
+          <!-- Credor <input type="text" id="name" readonly  disabled> -->
+          Descrição <input type="text" name="descricao" required value="{{context.conta.descricao}}">
+        </div>
+      </td>      
+      <td colspan="10" width ="15%" id="contaID">
+        <div class="control-group">
+          <!-- Valor  <input type="text" name="valor" required id="valor" style="text-align:right" onkeyup=formatarMoeda() value="{{context.conta.valor}}"> -->
+          Valor  <input type="currency" name="valor" required id="valor" style="text-align:right" value="{{context.conta.valor}}">
+        </div>
+      </td>      
+      <td colspan="10" width ="15%">
+        <div class="control-group">
+          Vencimento <input type="date" name="vencimento" format="dd/mm/yyyy" required value="{{context.conta.vencimento}}">
+        </div>
+      </td>			
+		</tr>
+  </table>
+
+  <table class="table full" align="center">
+   <tr bgcolor="ebebeb">
+     <td>
+       <div class="controls" align = "center">
+           <button type="submit" class="pure-button pure-button-primary">Salvar</button>
+           <a href="/contas/cadastrar"><input type="button" value="Voltar"></a>
+       </div>
+     </td>
+   </tr>
+  </table> 
+  <script>
+    // var currencyInput = document.querySelector('input[type="currency"]')
+    // var currency = 'BRL' // https://www.currency-iso.org/dam/downloads/lists/list_one.xml
+
+    // // format inital value
+    // onBlur({target:currencyInput})
+
+    // // bind event listeners
+    // currencyInput.addEventListener('focus', onFocus)
+    // currencyInput.addEventListener('blur', onBlur)
+
+
+    // function localStringToNumber( s ){
+    //   return Number(String(s).replace(/[^0-9.,-]+/g,""))
+    // }
+
+    // function onFocus(e){
+    //   var value = e.target.value;
+    //   e.target.value = value ? localStringToNumber(value) : ''
+    // }
+
+    // function onBlur(e){
+    //   var value = e.target.value
+
+    //   var options = {
+    //       maximumFractionDigits : 2,
+    //       currency              : currency,
+    //       style                 : "currency",
+    //       currencyDisplay       : "symbol"
+    //   }
+      
+    //   e.target.value = (value || value == 0) 
+    //     ? localStringToNumber(value).toLocaleString(undefined, options)
+    //     : ''
+    // }   
+
+    //Estava usando este, antes de comentar tudo
+    // var currencyInput = document.querySelectorAll( 'input[type="currency"]' );
+
+    // for ( var i = 0; i < currencyInput.length; i++ ) {
+
+    //     var currency = 'BRL'
+    //     onBlur( {
+    //         target: currencyInput[ i ]
+    //     } )
+
+    //     currencyInput[ i ].addEventListener( 'focus', onFocus )
+    //     currencyInput[ i ].addEventListener( 'blur', onBlur )
+
+    //     function localStringToNumber( s ) {
+    //         return Number( String( s ).replace( /[^0-9.-]+/g, "" ) )
+    //     }
+
+    //     function onFocus( e ) {
+    //         var value = e.target.value;
+    //         e.target.value = value ? localStringToNumber( value ) : ''
+    //     }
+
+    //     function onBlur( e ) {
+    //         var value = e.target.value
+
+    //         var options = {
+    //             maximumFractionDigits: 2,
+    //             currency: currency,
+    //             style: "currency",
+    //             currencyDisplay: "symbol"
+    //         }
+
+    //         e.target.value = ( value || value === 0 ) ?
+    //             localStringToNumber( value ).toLocaleString( undefined, options ) :
+    //             ''
+    //     }
+    // } 
+
+    // function formatarMoeda() {
+    //   var elemento = document.getElementById('valor');
+    //   var valor = elemento.value;
+      
+    //   valor = valor + '';
+    //   valor = parseInt(valor.replace(/[\D]+/g,''));
+      
+    //   debugger;
+    //   valor = valor + '';
+      
+    //   debugger;
+    //   valor = valor.replace(/([0-9]{2})$/g, ",$1");
+
+    //   if (valor.length > 6) {
+    //     valor = valor.replace(/([0-9]{3}),([0-9]{2}$)/g, ".$1,$2");
+    //   }
+      
+    //   if(isNaN(valor)){
+    //     debugger;
+    //   }else{
+    //     debugger;
+    //   }
+      
+    //   elemento.value = valor;
+    // }
+ 
+    
+  </script>
+</form>
+
+{% endblock %}
